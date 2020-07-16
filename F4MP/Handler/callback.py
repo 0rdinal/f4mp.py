@@ -1,7 +1,7 @@
-from ctypes import CFUNCTYPE
+from ctypes import CFUNCTYPE, POINTER
 
 from F4MP import Librg
-from F4MP.Librg.classes import Event
+from F4MP.Librg.classes import Event, Message
 
 
 class Task:
@@ -36,6 +36,8 @@ class CallbackHandler:
         SpawnBuilding = LIBRG_EVENT_LAST + 5
         RemoveBuilding = LIBRG_EVENT_LAST + 6
         Speak = LIBRG_EVENT_LAST + 7
+        UpdateAttributes = LIBRG_EVENT_LAST + 8
+        UpdateStatus = LIBRG_EVENT_LAST + 9
 
         dict = {
             "on_connection_request": LIBRG_CONNECTION_REQUEST,
@@ -45,7 +47,10 @@ class CallbackHandler:
             "on_entity_create": LIBRG_ENTITY_CREATE,
             "on_entity_delete": LIBRG_ENTITY_REMOVE,
             "on_entity_update": LIBRG_ENTITY_UPDATE,
-            "on_client_update": LIBRG_CLIENT_STREAMER_UPDATE
+            "on_client_update": LIBRG_CLIENT_STREAMER_UPDATE,
+
+            "on_update_attributes": UpdateAttributes,
+            "on_update_status": UpdateStatus
         }
         reverse = {v: k for k, v in dict.items()}
 
@@ -56,10 +61,14 @@ class CallbackHandler:
         self.server = server
         self.callback_enum = self.Enum()
         self.callback_func = CFUNCTYPE(None, Event)(self.callback_reception)
+        self.message_callback_func = CFUNCTYPE(None, Message)(self.callback_reception)
 
         for func_name, enum in self.callback_enum.dict.items():
             self.server.call_map[func_name] = set()
-            Librg.event_add(server.ctx, enum, self.callback_func)
+            if enum < 13: # LIBRG_EVENT_LAST
+                Librg.event_add(server.ctx, enum, self.callback_func)
+            else:
+                Librg.network_add(server.ctx, enum, self.message_callback_func)
 
     def callback_reception(self, event):
         # TODO: Point to abstract Librg.classes objects to F4MP objects.
