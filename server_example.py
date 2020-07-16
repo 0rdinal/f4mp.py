@@ -1,11 +1,15 @@
 import F4MP
 
-server = F4MP.Server("127.0.0.1", 7779)
+server = F4MP.Server("localhost", 7779)
 
 
 @server.listener()
 def on_connection_request(event):
-    pass
+    print('connection requested')
+
+@server.listener()
+def on_connection_accepted(event):
+    print('connection accepted')
 
 
 server.run()

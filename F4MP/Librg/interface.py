@@ -23,6 +23,10 @@ def event_add(ctx, event_id, callback):
         raise
 
 
+def network_add(ctx, message_id, callback):
+    dll.librg_network_add(ctx, message_id, callback)
+
+
 def network_start(ctx, address: bytes, port: int):
     address = Address(port, address)
 
@@ -31,3 +35,11 @@ def network_start(ctx, address: bytes, port: int):
 
 def tick(ctx):
     dll.librg_tick(ctx)
+
+
+def data_write(data, type, value):
+    getattr(dll, "librg_data_w" + type)(data, value)
+
+
+def data_read(data, type):
+    return getattr(dll, "librg_data_r" + type)(data)
