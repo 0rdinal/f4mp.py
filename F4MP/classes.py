@@ -19,7 +19,7 @@ class Attributes:
 
 class Status:
     def __init__(self, hp: int, ap: int, max_hp, max_ap):
-        assert hp <= max_hp and ap <= max_ap
+        assert hp <= max_hp and ap <= max_ap  # Probably not neccesary, could make HP a decimal between 0 and 1
         self.hp = hp
         self.ap = ap
         self.max_hp = max_hp

@@ -58,6 +58,8 @@ class CallbackHandler:
         self.callback_func = CFUNCTYPE(None, Event)(self.callback_reception)
 
         for func_name, enum in self.callback_enum.dict.items():
+            """This loop creates a callback for all the types of events and points them all to `callback_reception`
+            As well as adding an entry to the call map which is iterated at F4MP/server.py:38"""
             self.server.call_map[func_name] = set()
             Librg.event_add(server.ctx, enum, self.callback_func)
 
